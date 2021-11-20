@@ -1,0 +1,94 @@
+{ config, pkgs, ... }:
+
+{
+  imports =
+    [ # Include the results of the hardware scan.
+      ./hardware-configuration.nix
+    ];
+
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.systemd-boot.configurationLimit = 16;
+  boot.loader.timeout = 3;
+
+  time.timeZone = "Aisa/Shanghai";
+
+  networking.hostName = "nixos";
+  networking.networkmanager.enable = true;
+  networking.useDHCP = false;
+  networking.interfaces.ens33.useDHCP = true;
+
+  # networking.proxy.default = "http://user:password@proxy:port/";
+  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
+
+  i18n.defaultLocale = "en_US.UTF-8";
+  i18n.supportedLocales = [ "zh_CN.UTF-8/UTF-8" "en_US.UTF-8/UTF-8" ];
+  # console = {
+  #   font = "Lat2-Terminus16";
+  #   keyMap = "us";
+  # };
+
+  services.xserver.enable = true;
+  services.xserver.displayManager.gdm.enable = true;
+  services.xserver.desktopManager.gnome.enable = true;
+
+  # Enable CUPS to print documents.
+  # services.printing.enable = true;
+
+  # Enable sound.
+  sound.enable = true;
+  hardware.pulseaudio.enable = true;
+
+  # Enable touchpad support (enabled default in most desktopManager).
+  services.xserver.libinput.enable = true;
+
+  # Define a user account. Don't forget to set a password with ‘passwd’.
+  users.users.charmer = {
+    isNormalUser = true;
+    home = "/home/charmer";
+    description = "oliverdd";
+    extraGroups = [ "wheel" "docker" "audio" "sound" "video" "networkmanager" "input" "tty" "camera" ];
+  };
+
+  security = {
+    sudo = {
+      enable = true;
+      execWheelOnly = true;
+    };
+  };
+
+  # List packages installed in system profile. To search, run:
+  # $ nix search wget
+  environment.systemPackages = with pkgs; [
+    git
+    gnupg
+    neovim
+    wget
+  ];
+
+  # Some programs need SUID wrappers, can be configured further or are
+  # started in user sessions.
+  # programs.mtr.enable = true;
+  # programs.gnupg.agent = {
+  #   enable = true;
+  #   enableSSHSupport = true;
+  # };
+
+  # List services that you want to enable:
+
+  # Enable the OpenSSH daemon.
+  services.openssh.enable = true;
+
+  # Open ports in the firewall.
+  # networking.firewall.allowedTCPPorts = [ ... ];
+  # networking.firewall.allowedUDPPorts = [ ... ];
+  # Or disable the firewall altogether.
+  networking.firewall.enable = false;
+
+  virtualisation.vmware.guest.enable = true;
+
+  system = {
+    autoUpgrade.enable = true;
+    stateVersion = "21.05";
+  };
+
+}
